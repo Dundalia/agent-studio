@@ -1,0 +1,10 @@
+API URL: https://your-project-name.up.railway.app
+API Key: your_api_key_here
+
+# Notes:
+# - Update the URL above with your actual Railway deployment URL
+# - Update the API key with your secure API key
+# - The API key is also stored in the .env file
+# - The API has authentication enabled, so you need to include the API key in the X-API-Key header
+# - The health check endpoint doesn't require authentication: /health
+# - The chat endpoint requires authentication: /chat

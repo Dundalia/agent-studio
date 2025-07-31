@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent API Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .card {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+    .success {
+      color: green;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>Agent API Test</h1>
+  
+  <div class="container">
+    <div class="card">
+      <h2>API Configuration</h2>
+      <div class="form-group">
+        <label for="api-url">API URL</label>
+        <input type="text" id="api-url" value="https://your-agent-api-url.railway.app">
+      </div>
+      <div class="form-group">
+        <label for="api-key">API Key</label>
+        <input type="text" id="api-key" value="your_api_key_here">
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>Health Check</h2>
+      <button id="health-check-btn">Run Health Check</button>
+      <div id="health-result" class="result">
+        <h3>Result:</h3>
+        <pre id="health-output">Not tested yet</pre>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>Chat Test</h2>
+      <div class="form-group">
+        <label for="message">Message</label>
+        <textarea id="message" rows="3">Hello, how are you?</textarea>
+      </div>
+      <div class="form-group">
+        <label for="conversation-id">Conversation ID (optional)</label>
+        <input type="text" id="conversation-id" placeholder="Leave empty for new conversation">
+      </div>
+      <button id="chat-test-btn">Send Message</button>
+      <div id="chat-result" class="result">
+        <h3>Result:</h3>
+        <pre id="chat-output">Not tested yet</pre>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>Network Debugging</h2>
+      <p>Open your browser's developer tools (F12) and check the Network tab for more details about the requests.</p>
+      <p>Common issues:</p>
+      <ul>
+        <li>CORS errors - The API needs to allow requests from your domain</li>
+        <li>Authentication errors - Check if the API key is correct</li>
+        <li>Network errors - Check if the API is accessible from your location</li>
+      </ul>
+    </div>
+  </div>
+  
+  <script>
+    document.getElementById('health-check-btn').addEventListener('click', async () => {
+      const apiUrl = document.getElementById('api-url').value;
+      const healthOutput = document.getElementById('health-output');
+      
+      healthOutput.textContent = 'Testing...';
+      
+      try {
+        const response = await fetch(`${apiUrl}/health`);
+        const data = await response.json();
+        
+        if (response.ok) {
+          healthOutput.textContent = JSON.stringify(data, null, 2);
+          healthOutput.className = 'success';
+        } else {
+          healthOutput.textContent = `Error: ${response.status} ${response.statusText}\n${JSON.stringify(data, null, 2)}`;
+          healthOutput.className = 'error';
+        }
+      } catch (error) {
+        healthOutput.textContent = `Error: ${error.message}`;
+        healthOutput.className = 'error';
+      }
+    });
+    
+    document.getElementById('chat-test-btn').addEventListener('click', async () => {
+      const apiUrl = document.getElementById('api-url').value;
+      const apiKey = document.getElementById('api-key').value;
+      const message = document.getElementById('message').value;
+      const conversationId = document.getElementById('conversation-id').value;
+      const chatOutput = document.getElementById('chat-output');
+      
+      chatOutput.textContent = 'Sending message...';
+      
+      try {
+        const payload = {
+          message: message
+        };
+        
+        if (conversationId) {
+          payload.conversation_id = conversationId;
+        }
+        
+        const response = await fetch(`${apiUrl}/chat`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': apiKey
+          },
+          body: JSON.stringify(payload)
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          chatOutput.textContent = JSON.stringify(data, null, 2);
+          chatOutput.className = 'success';
+          
+          // Update conversation ID field with the returned ID
+          if (data.conversation_id) {
+            document.getElementById('conversation-id').value = data.conversation_id;
+          }
+        } else {
+          let errorText;
+          try {
+            const errorData = await response.json();
+            errorText = JSON.stringify(errorData, null, 2);
+          } catch (e) {
+            errorText = await response.text();
+          }
+          
+          chatOutput.textContent = `Error: ${response.status} ${response.statusText}\n${errorText}`;
+          chatOutput.className = 'error';
+        }
+      } catch (error) {
+        chatOutput.textContent = `Error: ${error.message}`;
+        chatOutput.className = 'error';
+      }
+    });
+  </script>
+</body>
+</html>
