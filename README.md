@@ -177,13 +177,6 @@ MIT License - see individual component READMEs for more details.
 4. Test thoroughly
 5. Submit a pull request
 
-## 📞 Support
-
-For questions, issues, or feature requests, please:
-1. Check the component-specific READMEs
-2. Review the debugging documentation
-3. Open an issue on GitHub
-
 ---
 
 **Built with ❤️ using modern web technologies and AI capabilities.**
