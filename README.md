@@ -168,15 +168,3 @@ For detailed setup instructions and advanced configuration:
 ## 📝 License
 
 MIT License - see individual component READMEs for more details.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
----
-
-**Built with ❤️ using modern web technologies and AI capabilities.**
